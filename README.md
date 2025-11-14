@@ -1,14 +1,18 @@
+
 ---
+
 # 🚀 Digiteer Vibe Coder - CrewAI Setup
 
-This guide explains how to set up and run **CrewAI** in your project, for both **Windows** and **Mac**.
+This guide explains how to set up and run **CrewAI** in your project, for **Windows**, **Mac**, and **WSL**.
+
 ---
 
 ## Prerequisites
 
-- Python 3.10+ installed
-- `pip` installed
-- Access to the project repository
+* Python 3.10+ installed
+* `pip` installed
+* Access to the project repository
+* For WSL: WSL2 installed and Linux distro set up
 
 ---
 
@@ -18,6 +22,12 @@ This guide explains how to set up and run **CrewAI** in your project, for both *
 
 ```bash
 pip install uv
+```
+
+Or via shell script:
+
+```bash
+wget -qO- https://astral.sh/uv/install.sh | sh
 ```
 
 > If `uv` is already installed, you can skip this step.
@@ -55,13 +65,15 @@ OPENAI_API_KEY=sk-proj...
 .\.venv\Scripts\activate
 ```
 
-### **Mac / Linux (Terminal)**
+### **Mac / Linux / WSL (Terminal)**
 
 ```bash
 source .venv/bin/activate
 ```
 
 > You should see `(.your_venv_name)` in your terminal.
+
+> **WSL Tip:** Make sure your project folder is inside your Linux filesystem (`/home/<user>/...`) and not mounted Windows drive (`/mnt/c/...`) to avoid path issues.
 
 ---
 
@@ -87,16 +99,19 @@ Running the Crew: see `output` folder for the result
 
 ⚠️ **Common Issues:**
 
-- `program not found`: Ensure `.venv` is activated.
-- Environment mismatch warning: Ensure the virtual environment path matches `.venv`.
+* `program not found`: Ensure `.venv` is activated.
+* Environment mismatch warning: Ensure the virtual environment path matches `.venv`.
+* WSL users: Make sure the `uv` binary is installed in WSL, not Windows.
 
 ---
 
 ## ✅ Notes
 
-- Always activate `.venv` before running `crewai run`.
-- Keep `.env` inside `src/`.
-- For Windows, use PowerShell or CMD consistently.
-- For Mac, use the default Terminal or iTerm.
+* Always activate `.venv` before running `crewai run`.
+* Keep `.env` inside `src/`.
+* For Windows, use PowerShell or CMD consistently.
+* For Mac / Linux / WSL, use the default terminal.
+* On WSL, avoid running `.venv` from mounted Windows drives to prevent permission/path errors.
 
 ---
+
