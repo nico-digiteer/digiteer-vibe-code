@@ -1,7 +1,11 @@
+Here’s your README updated to make **Uv installation optional**, clarify `.env` usage, and streamline the steps:
+
 ---
+
 # 🚀 Digiteer Vibe Coder - CrewAI Setup
 
-This guide explains how to set up and run **CrewAI** in your project, both on **Windows** and **Mac**.
+This guide explains how to set up and run **CrewAI** in your project, for both **Windows** and **Mac**.
+
 ---
 
 ## Prerequisites
@@ -12,65 +16,74 @@ This guide explains how to set up and run **CrewAI** in your project, both on **
 
 ---
 
-## 1. Install Uv
+## 1. Install Uv (Optional)
 
-`Uv` is required to manage virtual environments and sync your project.
+`Uv` is only required if you want to manage virtual environments and sync your project automatically.
 
 ```bash
 pip install uv
 ```
 
+> If `uv` is already installed, you can skip this step.
+
 ---
 
 ## 2. Sync Uv
 
-Ensure `uv` is linked to the project:
+If using `uv`, sync it with the project:
 
 ```bash
 uv sync
 ```
 
-This command syncs the virtual environment and project dependencies.
+---
+
+## 3. Create `.env` File
+
+Create a `.env` file **inside the `src/` directory** with your project credentials. Example:
+
+```
+# src/.env
+OPENAI_API_KEY=sk-proj...
+```
+
+> Replace the placeholder with your actual key(s).
 
 ---
 
-## 3. Activate Virtual Environment
+## 4. Activate Virtual Environment
 
 ### **Windows (PowerShell / CMD)**
 
 ```powershell
-# Activate virtual environment
 .\.venv\Scripts\activate
 ```
-
-You should see `(.venv)` in your terminal, indicating the environment is active.
 
 ### **Mac / Linux (Terminal)**
 
 ```bash
-# Activate virtual environment
 source .venv/bin/activate
 ```
 
+> You should see `(.your_venv_name)` in your terminal.
+
 ---
 
-## 4. Navigate to Engineering Team Folder
+## 5. Navigate to Engineering Team Folder
 
 ```bash
 cd engineering_team
 ```
 
-Make sure you are inside the correct folder where your CrewAI code lives.
-
 ---
 
-## 5. Run CrewAI
+## 6. Run CrewAI
 
 ```bash
 crewai run
 ```
 
-If everything is set up correctly, you should see:
+Expected output:
 
 ```
 Running the Crew: see `output` folder for the result
@@ -78,7 +91,7 @@ Running the Crew: see `output` folder for the result
 
 ⚠️ **Common Issues:**
 
-- `program not found`: Make sure `.venv` is activated and `uv` is installed.
+- `program not found`: Ensure `.venv` is activated.
 - Environment mismatch warning: Ensure the virtual environment path matches `.venv`.
 
 ---
@@ -86,6 +99,7 @@ Running the Crew: see `output` folder for the result
 ## ✅ Notes
 
 - Always activate `.venv` before running `crewai run`.
+- Keep `.env` inside `src/`.
 - For Windows, use PowerShell or CMD consistently.
 - For Mac, use the default Terminal or iTerm.
 
