@@ -1,0 +1,47 @@
+design_task:
+  description: >
+    Take the high-level requirements described here and prepare a detailed frontend design for the Rails engineer.
+    The design must be in Markdown format and must outline:
+      - The Rails view structure Slim
+      - The Stimulus controller(s) needed
+      - Tailwind classes and layout structure
+      - Any partials or components required
+    Here are the requirements: {requirements}
+    IMPORTANT: Only output the design in markdown format, laying out in detail the Rails view template and Stimulus controller structure.
+  expected_output: >
+    A detailed design for the engineer, identifying the Rails views, layout, Stimulus controllers, components, and UI interactions.
+  agent: engineering_lead
+  output_file: output/{module_name}_design.md
+
+code_task:
+  description: >
+    Write the actual Rails frontend template files based on the design from the engineering lead.
+    This includes:
+      - A full Slim template representing the UI in the screenshot
+      - The Stimulus controller(s)
+      - Any needed partials
+      - Tailwind utility classes
+    The output must be valid Rails view code—not Ruby classes—and should be ready to paste into:
+      app/views/{module_name}/index.html.slim
+      app/javascript/controllers/{module_name}_controller.js
+    Here are the requirements: {requirements}
+  expected_output: >
+    The complete frontend template code, ready to be saved in the Rails app.
+    IMPORTANT: Output ONLY raw code — no markdown, no code fences.
+  agent: frontend_engineer
+  context:
+    - design_task
+  output_file: output/{module_name}_template.txt
+
+frontend_task:
+  description: >
+    Produce a simplified interactive prototype of the UI using a Stimulus controller that simulates interactions
+    (search, filters, pagination) without needing backend logic.
+    This should be a functional static prototype that behaves similarly to the screenshot.
+  expected_output: >
+    The ERB template + corresponding Stimulus controller simulating UI interactions.
+    IMPORTANT: Output only raw code, no markdown formatting.
+  agent: frontend_engineer
+  context:
+    - code_task
+  output_file: output/{module_name}_prototype.txt
