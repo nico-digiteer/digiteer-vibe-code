@@ -1,47 +1,179 @@
-design_task:
+architecture_task:
   description: >
-    Take the high-level requirements described here and prepare a detailed frontend design for the Rails engineer.
-    The design must be in Markdown format and must outline:
-      - The Rails view structure Slim
-      - The Stimulus controller(s) needed
-      - Tailwind classes and layout structure
-      - Any partials or components required
-    Here are the requirements: {requirements}
-    IMPORTANT: Only output the design in markdown format, laying out in detail the Rails view template and Stimulus controller structure.
-  expected_output: >
-    A detailed design for the engineer, identifying the Rails views, layout, Stimulus controllers, components, and UI interactions.
-  agent: engineering_lead
-  output_file: output/{module_name}_design.md
+    Design the complete architecture for {feature_name} in a Rails e-commerce application.
 
-code_task:
-  description: >
-    Write the actual Rails frontend template files based on the design from the engineering lead.
-    This includes:
-      - A full Slim template representing the UI in the screenshot
-      - The Stimulus controller(s)
-      - Any needed partials
-      - Tailwind utility classes
-    The output must be valid Rails view code—not Ruby classes—and should be ready to paste into:
-      app/views/{module_name}/index.html.slim
-      app/javascript/controllers/{module_name}_controller.js
-    Here are the requirements: {requirements}
+    Requirements: {requirements}
+
+    Output a detailed technical specification including:
+    1. Database Schema
+       - Table structures with columns and types
+       - Indexes and foreign keys
+       - Migration files
+
+    2. Models
+       - Model classes with associations
+       - Validations and scopes
+       - Class and instance methods
+
+    3. Routes
+       - RESTful routes configuration
+       - Nested routes if needed
+       - Custom routes
+
+    4. Controller Structure
+       - Controller actions needed
+       - Strong parameters
+       - Before actions and filters
+
+    5. Service Objects (if complex business logic)
+       - Service class structure
+       - Method signatures
+
+    Format output as structured markdown with code examples.
   expected_output: >
-    The complete frontend template code, ready to be saved in the Rails app.
-    IMPORTANT: Output ONLY raw code — no markdown, no code fences.
-  agent: frontend_engineer
-  context:
-    - design_task
-  output_file: output/{module_name}_template.txt
+    A comprehensive technical specification document with all architectural decisions,
+    database schema, model structure, routes, and controller outline.
+  agent: rails_architect
+  output_file: output/{feature_name}_architecture.md
 
 frontend_task:
   description: >
-    Produce a simplified interactive prototype of the UI using a Stimulus controller that simulates interactions
-    (search, filters, pagination) without needing backend logic.
-    This should be a functional static prototype that behaves similarly to the screenshot.
+    Create complete frontend views for {feature_name} using Slim, Stimulus, and Bootstrap 5.
+
+    Based on the architecture specification, create:
+
+    1. Slim View Templates
+       - Index page (list/grid view)
+       - Show page (detail view)
+       - Form pages (new/edit)
+       - Partials for reusable components
+
+    2. Stimulus Controllers
+       - JavaScript controllers for interactivity
+       - Data attributes and targets
+       - Actions and event handlers
+
+    3. Bootstrap 5 Styling
+       - Use Bootstrap classes and components (cards, buttons, forms, modals, navbar)
+       - Responsive design using Bootstrap grid system
+       - Bootstrap utilities for spacing, colors, typography
+       - Accessible components
+
+    4. Turbo Frames/Streams
+       - Dynamic content updates
+       - Form submissions without page reload
+
+    Requirements: {requirements}
+
+    IMPORTANT: 
+    - Use only Slim syntax (not ERB)
+    - Use Bootstrap 5 classes only (no custom CSS, no Tailwind)
+    - Use Bootstrap components: cards, buttons, badges, alerts, modals, navbars
+    - Make it mobile-responsive using Bootstrap grid (container, row, col-*)
+    - Include loading states and error handling in UI
+    - Use Bootstrap form classes (form-control, form-label, form-select, etc.)
   expected_output: >
-    The ERB template + corresponding Stimulus controller simulating UI interactions.
-    IMPORTANT: Output only raw code, no markdown formatting.
-  agent: frontend_engineer
+    Complete frontend implementation with:
+    - All Slim view files
+    - Stimulus controller files
+    - Navigation components using Bootstrap
+    - Responsive, production-ready UI code with Bootstrap 5
+  agent: frontend_developer
   context:
-    - code_task
-  output_file: output/{module_name}_prototype.txt
+    - architecture_task
+  output_file: output/{feature_name}_views.txt
+
+integration_task:
+  description: >
+    Create the Rails controllers that connect the frontend views to the backend models.
+
+    Based on both architecture and frontend specifications, create:
+
+    1. Controller Files
+       - Full controller implementation
+       - All CRUD actions (index, show, new, create, edit, update, destroy)
+       - Strong parameters
+       - Before actions for authorization
+
+    2. Routes Configuration
+       - Complete routes.rb entries
+       - Nested routes if applicable
+
+    3. Helper Methods
+       - View helpers if needed
+       - Form helpers
+
+    4. Flash Messages
+       - Success/error notifications
+       - Proper redirects
+
+    5. Error Handling
+       - Validation errors
+       - Not found handling
+       - Permission errors
+
+    Requirements: {requirements}
+
+    IMPORTANT:
+    - Controllers should be RESTful
+    - Use strong parameters
+    - Include proper error handling
+    - Add comments for clarity
+    - Follow Rails conventions
+  expected_output: >
+    Complete controller implementation ready to paste into app/controllers/.
+    Include routes configuration and any helper methods needed.
+  agent: integration_engineer
+  context:
+    - architecture_task
+    - frontend_task
+  output_file: output/{feature_name}_controllers.rb
+
+migration_task:
+  description: >
+    Generate the database migration files needed for {feature_name}.
+
+    Based on the architecture specification, create:
+    - Rails migration files with proper naming
+    - All table creation/modification commands
+    - Indexes for performance
+    - Foreign keys for referential integrity
+
+    Requirements: {requirements}
+
+    IMPORTANT:
+    - Use Rails migration DSL
+    - Include timestamps
+    - Add proper indexes
+    - Include rollback (down) methods
+  expected_output: >
+    Complete migration files ready to run with rails db:migrate
+  agent: rails_architect
+  context:
+    - architecture_task
+  output_file: output/{feature_name}_migrations.rb
+
+model_task:
+  description: >
+    Generate the Rails model files for {feature_name}.
+
+    Based on the architecture specification, create:
+    - Model classes with proper inheritance
+    - Associations (belongs_to, has_many, etc.)
+    - Validations
+    - Scopes and class methods
+    - Instance methods for business logic
+
+    Requirements: {requirements}
+
+    IMPORTANT:
+    - Follow Rails naming conventions
+    - Include all necessary validations
+    - Add helpful scopes
+    - Keep models focused (use service objects for complex logic)
+  expected_output: >
+    Complete model files ready to paste into app/models/
+  agent: rails_architect
+  context:
+    - architecture_task
+  output_file: output/{feature_name}_models.rb

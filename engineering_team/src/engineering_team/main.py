@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-import sys
 import warnings
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 
 from engineering_team.crew import EngineeringTeam
 
@@ -14,36 +11,54 @@ load_dotenv()
 os.makedirs('output', exist_ok=True)
 
 requirements = """
-A simple account management system for a trading simulation platform.
-The system should allow users to create an account, deposit funds, and withdraw funds.
-The system should allow users to record that they have bought or sold shares, providing a quantity.
-The system should calculate the total value of the user's portfolio, and the profit or loss from the initial deposit.
-The system should be able to report the holdings of the user at any point in time.
-The system should be able to report the profit or loss of the user at any point in time.
-The system should be able to list the transactions that the user has made over time.
-The system should prevent the user from withdrawing funds that would leave them with a negative balance, or
- from buying more shares than they can afford, or selling shares that they don't have.
- The system has access to a function get_share_price(symbol) which returns the current price of a share, and includes a test implementation that returns fixed prices for AAPL, TSLA, GOOGL.
+Build a simple e-commerce website with these features:
+
+1. PRODUCTS
+   - List products in grid (Bootstrap cards)
+   - Show: image, name, price
+   - Search and filter by category
+   - Product detail page
+   - Add to cart button
+
+2. CART
+   - Add/remove items
+   - Update quantities
+   - Show total
+   - Mini cart in navbar (Bootstrap badge)
+
+3. CHECKOUT
+   - Simple form: name, email, address
+   - Order confirmation page
+
+4. ADMIN
+   - Add/edit products (Bootstrap form)
+   - View orders (Bootstrap table)
+
+DESIGN:
+- Bootstrap 5 (navbar, cards, buttons, forms, badges)
+- Mobile responsive (Bootstrap grid)
+- Clean and simple
+
+TECH:
+- Rails 7+ with Slim templates
+- Stimulus JS
+- Bootstrap 5 (no custom CSS)
+- Turbo for dynamic updates
 """
-module_name = "accounts.py"
-class_name = "Account"
 
 
 def run():
     """
     Run the research crew.
     """
-    inputs = {
-        'requirements': requirements,
-        'module_name': module_name,
-        'class_name': class_name
-    }
+    FEATURE_NAME = "ecommerce_store"
+    inputs = {'requirements': requirements, 'feature_name': FEATURE_NAME,}
 
     # Create and run the crew
-    print("Loaded OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY")[:10], "...")  # just shows first 10 chars
+    print("Loaded OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY")[:10], "...") 
     result = EngineeringTeam().crew().kickoff(inputs=inputs)
+    print("RESULTTTTTTT")
     print(result)
-
 
 if __name__ == "__main__":
     run()
