@@ -1,11 +1,7 @@
-Here’s your README updated to make **Uv installation optional**, clarify `.env` usage, and streamline the steps:
-
 ---
-
 # 🚀 Digiteer Vibe Coder - CrewAI Setup
 
 This guide explains how to set up and run **CrewAI** in your project, for both **Windows** and **Mac**.
-
 ---
 
 ## Prerequisites
