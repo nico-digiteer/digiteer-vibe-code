@@ -1,83 +1,79 @@
 architecture_task:
   description: >
-    Design the complete architecture for {feature_name} in a Rails e-commerce application.
-
+    Design the complete architecture for {feature_name} within our current Rails-based,
+    Hotwire-enabled application. The architecture must support scalable, Jira-like patterns:
+    workflow states, assignments, comments, activity logs, permission roles, filtering,
+    and fast UI interactions.
     Requirements: {requirements}
-
-    Output a detailed technical specification including:
+    Produce a full architecture specification including:
     1. Database Schema
-       - Table structures with columns and types
-       - Indexes and foreign keys
-       - Migration files
-
+       - Table structures with correct column types, enums, workflow fields
+       - Indexes optimized for filtering/sorting (e.g., status, assigned_to_id)
+       - Foreign keys and cascading rules
+       - Migration file examples
     2. Models
-       - Model classes with associations
-       - Validations and scopes
-       - Class and instance methods
-
+       - Complete associations between models (e.g., project → tickets, ticket → comments, ticket → activity logs)
+       - Validations, scopes, enums (e.g., :open, :in_progress, :blocked, :resolved)
+       - Concise class/instance methods supporting workflow transitions
     3. Routes
-       - RESTful routes configuration
-       - Nested routes if needed
-       - Custom routes
-
+       - RESTful route definitions
+       - Nested resources when relevant (e.g., tickets/:id/comments)
+       - Routes for workflow transitions (e.g., POST /tickets/:id/transition)
     4. Controller Structure
-       - Controller actions needed
-       - Strong parameters
-       - Before actions and filters
-
-    5. Service Objects (if complex business logic)
-       - Service class structure
-       - Method signatures
-
+       - CRUD actions and workflow transition actions
+       - Strong parameters and permitted fields
+       - Before actions for permission checks or loading entities
+    5. Service Objects (for business logic)
+       - Workflow transition services
+       - Assignment/notification services
+       - Query/filter services (e.g., TicketFilterService)
     Format output as structured markdown with code examples.
   expected_output: >
-    A comprehensive technical specification document with all architectural decisions,
-    database schema, model structure, routes, and controller outline.
+    A production-grade technical specification document describing all architectural
+    decisions, database schema, model design, routes, controller outlines, and service patterns.
   agent: rails_architect
   output_file: output/{feature_name}_architecture.md
 
 frontend_task:
   description: >
-    Create complete frontend views for {feature_name} using Slim, Stimulus, and Bootstrap 5.
+    Build complete frontend UI for {feature_name} using Slim, Stimulus, Bootstrap 5,
+    and Turbo Streams. The UI should resemble modern ticketing systems (Jira, Linear),
+    with responsive layouts and fast Hotwire interactions.
 
-    Based on the architecture specification, create:
+    Based on the architecture, deliver:
 
     1. Slim View Templates
-       - Index page (list/grid view)
-       - Show page (detail view)
-       - Form pages (new/edit)
-       - Partials for reusable components
+       - Index: list, table, or kanban board based on requirements
+       - Show: ticket detail with comments, activity, attachments
+       - Form views: new/edit with Bootstrap form structure
+       - Reusable components: status badges, assignment dropdowns, modals
 
     2. Stimulus Controllers
-       - JavaScript controllers for interactivity
-       - Data attributes and targets
-       - Actions and event handlers
+       - Interaction logic (status changes, filtering, modal handling)
+       - Turbo Stream integration for live updates
+       - Loading states, error states, optimistic updates
 
-    3. Bootstrap 5 Styling
-       - Use Bootstrap classes and components (cards, buttons, forms, modals, navbar)
-       - Responsive design using Bootstrap grid system
-       - Bootstrap utilities for spacing, colors, typography
-       - Accessible components
+    3. Bootstrap 5 Integration
+       - Use only Bootstrap 5 (no Tailwind)
+       - Proper grid system usage
+       - Buttons, navbars, modals, cards, alerts, forms
+       - Accessible patterns (ARIA, roles, keyboard nav)
 
-    4. Turbo Frames/Streams
-       - Dynamic content updates
-       - Form submissions without page reload
+    4. Turbo Frames & Streams
+       - Inline updates without reloads
+       - Dynamic actions (transition status, comment creation)
 
     Requirements: {requirements}
 
-    IMPORTANT: 
-    - Use only Slim syntax (not ERB)
-    - Use Bootstrap 5 classes only (no custom CSS, no Tailwind)
-    - Use Bootstrap components: cards, buttons, badges, alerts, modals, navbars
-    - Make it mobile-responsive using Bootstrap grid (container, row, col-*)
-    - Include loading states and error handling in UI
-    - Use Bootstrap form classes (form-control, form-label, form-select, etc.)
+    IMPORTANT:
+    - No ERB, Slim only
+    - No custom CSS unless absolutely required
+    - Must be mobile-responsive using Bootstrap grid
+    - Must include UI/UX states: loading, disabled, errors
+
   expected_output: >
-    Complete frontend implementation with:
-    - All Slim view files
-    - Stimulus controller files
-    - Navigation components using Bootstrap
-    - Responsive, production-ready UI code with Bootstrap 5
+    Complete set of frontend templates (Slim), Stimulus controllers, reusable UI components,
+    and Turbo-ready interactions for immediate integration.
   agent: frontend_developer
   context:
     - architecture_task
@@ -85,44 +81,45 @@ frontend_task:
 
 integration_task:
   description: >
-    Create the Rails controllers that connect the frontend views to the backend models.
+    Build the Rails controllers and routing that connect the frontend and backend.
+    Follow Rails conventions, ensure clean strong parameters, and support full workflow.
 
-    Based on both architecture and frontend specifications, create:
+    Based on the architecture and frontend output, create:
 
     1. Controller Files
-       - Full controller implementation
-       - All CRUD actions (index, show, new, create, edit, update, destroy)
-       - Strong parameters
-       - Before actions for authorization
+       - RESTful CRUD actions for {feature_name}
+       - Workflow transition actions
+       - Commenting, assignment, filtering, etc.
+       - Before actions (load resources, authenticate, authorize)
 
     2. Routes Configuration
-       - Complete routes.rb entries
-       - Nested routes if applicable
+       - routes.rb definitions
+       - Named routes for workflow transitions
+       - Nested comments or activity resources if applicable
 
-    3. Helper Methods
-       - View helpers if needed
-       - Form helpers
+    3. Helpers
+       - View helpers for status badges, formatted timestamps, etc.
 
     4. Flash Messages
-       - Success/error notifications
-       - Proper redirects
+       - Success/error handling
+       - Turbo-stream friendly flashes when needed
 
     5. Error Handling
-       - Validation errors
-       - Not found handling
-       - Permission errors
+       - Validation failures
+       - Not found / unauthorized states
+       - Graceful fallbacks
 
     Requirements: {requirements}
 
     IMPORTANT:
-    - Controllers should be RESTful
-    - Use strong parameters
-    - Include proper error handling
+    - Use strong parameters strictly
+    - Keep controllers concise (push logic to services)
     - Add comments for clarity
-    - Follow Rails conventions
+    - Ensure RESTful structure with clean redirects and Turbo responses
+
   expected_output: >
-    Complete controller implementation ready to paste into app/controllers/.
-    Include routes configuration and any helper methods needed.
+    Fully implemented Rails controllers and routes ready for use in app/controllers/,
+    including helpers and error-handling logic.
   agent: integration_engineer
   context:
     - architecture_task
@@ -131,23 +128,25 @@ integration_task:
 
 migration_task:
   description: >
-    Generate the database migration files needed for {feature_name}.
+    Generate all migration files needed for {feature_name} based on the architecture.
 
-    Based on the architecture specification, create:
-    - Rails migration files with proper naming
-    - All table creation/modification commands
-    - Indexes for performance
-    - Foreign keys for referential integrity
+    Deliver:
+    - Table creation migrations
+    - Column additions/modifications
+    - Foreign keys
+    - Indexes (especially for filtering: status, assigned_to, priority)
+    - Full reversible up/down methods
 
     Requirements: {requirements}
 
     IMPORTANT:
     - Use Rails migration DSL
-    - Include timestamps
-    - Add proper indexes
-    - Include rollback (down) methods
+    - Always include timestamps
+    - Add indexing for performance
+    - Ensure reversible migrations
+
   expected_output: >
-    Complete migration files ready to run with rails db:migrate
+    Complete set of migration files ready to run immediately.
   agent: rails_architect
   context:
     - architecture_task
@@ -155,24 +154,27 @@ migration_task:
 
 model_task:
   description: >
-    Generate the Rails model files for {feature_name}.
+    Create complete Rails model files for {feature_name}.
 
-    Based on the architecture specification, create:
-    - Model classes with proper inheritance
-    - Associations (belongs_to, has_many, etc.)
+    Based on the architecture, include:
+    - Associations (belongs_to, has_many, has_rich_text etc.)
     - Validations
-    - Scopes and class methods
-    - Instance methods for business logic
+    - Scopes for filtering (e.g., by status, priority, assignee)
+    - Enums for workflow states
+    - Instance methods for transitions, display formatting
+    - Concise business logic (heavier logic must be placed into service objects)
 
     Requirements: {requirements}
 
     IMPORTANT:
-    - Follow Rails naming conventions
-    - Include all necessary validations
-    - Add helpful scopes
-    - Keep models focused (use service objects for complex logic)
+    - Strictly follow Rails naming conventions
+    - Keep models lean
+    - Add descriptive scopes
+    - Use enums for workflows
+
   expected_output: >
-    Complete model files ready to paste into app/models/
+    Complete model files ready for app/models/ with associations, validations, enums,
+    and lightweight logic.
   agent: rails_architect
   context:
     - architecture_task

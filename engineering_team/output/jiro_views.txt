@@ -1,0 +1,195 @@
+Here is the complete frontend UI implementation for Jiro using the specified technologies and patterns:
+
+### 1. Slim View Templates
+
+**Index (Projects)**
+```slim
+-# app/views/projects/index.html.slim
+.container
+  h1 Projects
+  = link_to 'New Project', new_project_path, class: 'btn btn-primary mb-3'
+
+  table.table.table-striped
+    thead
+      tr
+        th Name
+        th Key
+        th Status
+        th Actions
+    tbody
+      - @projects.each do |project|
+        tr
+          td = project.name
+          td = project.key
+          td = project.status.titleize
+          td
+            = link_to 'Show', project_path(project), class: 'btn btn-secondary btn-sm'
+            = link_to 'Edit', edit_project_path(project), class: 'btn btn-warning btn-sm'
+            = link_to 'Archive', archive_project_path(project), method: :patch, class: 'btn btn-danger btn-sm'
+
+.container
+  h2 Tickets
+  = render 'tickets/index', tickets: @tickets
+```
+
+**Show (Project)**
+```slim
+-# app/views/projects/show.html.slim
+.container
+  h1 = @project.name
+
+  .mb-4
+    = link_to 'Edit Project', edit_project_path(@project), class: 'btn btn-warning'
+    = link_to 'Archive Project', archive_project_path(@project), method: :patch, class: 'btn btn-danger'
+    = link_to 'Back to Projects', projects_path, class: 'btn btn-secondary'
+
+  h3 Tickets
+  = render 'tickets/index', tickets: @project.tickets
+```
+
+**Ticket Form**
+```slim
+-# app/views/tickets/_form.html.slim
+= form_with model: [@project, @ticket], class: 'ticket-form', local: false do |f|
+  .mb-3
+    = f.label :title, class: 'form-label'
+    = f.text_field :title, class: 'form-control', required: true
+
+  .mb-3
+    = f.label :description, class: 'form-label'
+    = f.text_area :description, class: 'form-control'
+
+  .mb-3
+    = f.label :status, class: 'form-label'
+    = f.select :status, Ticket.statuses.keys.map { |s| [s.titleize, s] }, {}, class: 'form-select'
+
+  .mb-3
+    = f.label :priority, class: 'form-label'
+    = f.select :priority, Ticket.priorities.keys.map { |p| [p.titleize, p] }, {}, class: 'form-select'
+
+  .mb-3
+    = f.label :assigned_to, class: 'form-label'
+    = f.collection_select :assigned_to_id, User.all, :id, :name, { include_blank: true }, { class: 'form-select' }
+
+  .mb-3
+    = f.label :reporter, class: 'form-label'
+    = f.collection_select :reporter_id, User.all, :id, :name, { include_blank: true }, { class: 'form-select' }
+
+  .d-flex.justify-content-end
+    = f.submit class: 'btn btn-primary'
+    = link_to 'Cancel', project_tickets_path(@project), class: 'btn btn-secondary ms-2'
+```
+
+**Reusable Components**
+- Status Badge
+```slim
+-# app/views/components/_status_badge.html.slim
+.span.badge.badge-#{status.downcase} #{status.titleize}
+```
+
+- Assignment Dropdown
+```slim
+-# app/views/components/_assignment_dropdown.html.slim
+= form_with model: [ticket], url: assign_ticket_path(ticket), method: :patch, class: 'assignment-form', local: false do |f|
+  .d-flex.align-items-center
+    = f.label :assigned_to, 'Assignee', class: 'me-2'
+    = f.collection_select :assigned_to_id, User.all, :id, :name, { include_blank: true }, { class: 'form-select', onchange: 'this.form.submit()' }
+```
+
+### 2. Stimulus Controllers
+
+**TicketController**
+```javascript
+// app/javascript/controllers/ticket_controller.js
+import { Controller } from "stimulus";
+
+export default class extends Controller {
+  static targets = ["status", "priority", "assignee"];
+
+  connect() {
+    // initialize filters here if needed
+  }
+
+  changeStatus(event) {
+    this.performAction(event, 'transition');
+  }
+
+  changeAssignee(event) {
+    this.performAction(event, 'assign');
+  }
+
+  performAction(event, action) {
+    event.preventDefault();
+    const url = event.target.dataset.url;
+    const value = event.target.value;
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ action, value })
+    }).then(response => {
+      if (response.ok) {
+        // handle success, e.g., display a modal or update the UI
+      } else {
+        // handle error
+      }
+    });
+  }
+}
+```
+
+### 3. Bootstrap 5 Integration
+
+- Ensure all forms, tables, and modals use Bootstrap 5 components.
+- Example Button Group:
+```html
+<div class="btn-group" role="group">
+  <button type="button" class="btn btn-primary">Primary</button>
+  <button type="button" class="btn btn-secondary">Secondary</button>
+</div>
+```
+
+### 4. Turbo Frames & Streams
+
+**Ticket Details with Comments**
+```slim
+-# app/views/tickets/show.html.slim
+.container
+  h1 = @ticket.title
+  p = @ticket.description
+
+  .ticket-details
+    h3 Details
+    p Status: 
+      = render 'components/status_badge', status: @ticket.status
+    p Priority: 
+      = @ticket.priority.titleize
+    p Assignee: 
+      = @ticket.assigned_to&.name || 'Unassigned'
+
+    = render 'components/assignment_dropdown', ticket: @ticket
+
+  hr
+
+  h3 Comments
+  = turbo_frame_tag dom_id(@ticket, :comments) do
+    = render @ticket.comments
+
+  = render 'comments/form', ticket: @ticket
+```
+
+**Comment Form with Turbo Frame**
+```slim
+-# app/views/comments/_form.html.slim
+= form_with model: [@ticket, @comment], data: { turbo_frame: dom_id(@ticket, :comments) } do |f|
+  .mb-3
+    = f.text_area :content, class: 'form-control', rows: 3
+
+  .d-flex.justify-content-end
+    = f.submit 'Add Comment', class: 'btn btn-primary'
+```
+
+This setup ensures your Jiro application has a modern UI that is fully dynamic, responsive, and accessible, using Rails 7, Slim, Stimulus, Bootstrap 5, and Turbo Streams to achieve a seamless, Jira-like experience.
